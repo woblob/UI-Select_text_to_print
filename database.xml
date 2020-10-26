@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+  <Element Name="sprzedaz" Text="">
+    <Element Name="dom" Text="">
+      <Element Name="Element 22" Text="treść 1: to co ma być wpisane do formatu docx"/>
+      <Element Name="Element 23" Text="treść 2: to co ma być wpisane do formatu docx"/>
+      <Element Name="Element 24" Text="treść 3: to co ma być wpisane do formatu docx"/>
+    </Element>
+    <Element Name="dzialka" Text="">
+      <Element Name="Element 25" Text="treść 4: to co ma być wpisane do formatu docx"/>
+      <Element Name="Element 26" Text="treść 5: to co ma być wpisane do formatu docx"/>
+      <Element Name="Element 27" Text="treść 6: to co ma być wpisane do formatu docx"/>
+    </Element>
+    <Element Name="las" Text="">
+      <Element Name="Element 28" Text="treść 7: to co ma być wpisane do formatu docx"/>
+      <Element Name="Element 29" Text="treść 8: to co ma być wpisane do formatu docx"/>
+    </Element>
+    <Element Name="pole uprawne" Text="">
+      <Element Name="Element 30" Text="treść 9: to co ma być wpisane do formatu docx"/>
+    </Element>
+  </Element>
+  <Element Name="wynajem" Text="">
+    <Element Name="mieszkanie" Text="">
+      <Element Name="Element 31" Text="treść 10: to co ma być wpisane do formatu docx"/>
+      <Element Name="Element 32" Text="treść 11: to co ma być wpisane do formatu docx"/>
+      <Element Name="Element 35" Text="treść 12: to co ma być wpisane do formatu docx"/>
+    </Element>
+    <Element Name="sala" Text="">
+      <Element Name="Element 33" Text="treść 13: to co ma być wpisane do formatu docx"/>
+    </Element>
+    <Element Name="pokoj" Text="">
+      <Element Name="Element 34" Text="treść 14: to co ma być wpisane do formatu docx"/>
+    </Element>
+  </Element>
+  <Element Name="poświadczenie" Text="">
+    <Element Name="tłumaczenie" Text="">
+      <Element Name="Element 36" Text="treść 15 : to co ma być wpisane do formatu docx"/>
+    </Element>
+    <Element Name="potwierdzenie" Text="">
+      <Element Name="Element 37" Text="treść 16: to co ma być wpisane do formatu docx"/>
+    </Element>
+    <Element Name="cokolwiek" Text="">
+      <Element Name="Element 38" Text="treść 17: to co ma być wpisane do formatu docx"/>
+    </Element>
+  </Element>
+</root>
