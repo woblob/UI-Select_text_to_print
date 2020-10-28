@@ -33,7 +33,7 @@ class EditTab(QWidget):
         self.remove_button = None
         self.database = link.database
         self.signal = link.send_signal
-        self.tree_q = link.Qtree
+        self.tree_model = link.tree_model
         self.file_dialog = CustomFileDialog()
 
         self.initialize_tab()
@@ -82,24 +82,24 @@ class EditTab(QWidget):
 
     def make_edit_tree(self):
         tree_view = QTreeView()
-        tree_view.setModel(self.tree_q)
+        tree_view.setModel(self.tree_model)
 
         self.tree_view = tree_view
         tree_view.header().setSectionResizeMode(QHeaderView.ResizeToContents)
 
-        # self.tree_q.itemClicked.connect(self.select_item)
-        # self.tree_q.itemDoubleClicked.connect(self.edit_tree_item)
-        # self.tree_q.itemSelectionChanged.connect(self.update_tree_item_selection)
+        # self.tree_model.itemClicked.connect(self.select_item)
+        # self.tree_model.itemDoubleClicked.connect(self.edit_tree_item)
+        # self.tree_model.itemSelectionChanged.connect(self.update_tree_item_selection)
 
         return tree_view
 
     def add_tree_item(self):
         if self.currently_selected_tree_item is None:
-            parent = self.tree_q
+            parent = self.tree_model
         else:
             parent = self.currently_selected_tree_item.parent()
             if parent is None:
-                parent = self.tree_q
+                parent = self.tree_model
 
         new_item = QTreeWidgetItem(parent)
         new_item.setText(0, f"Element {self.helper_counter}")
@@ -136,7 +136,7 @@ class EditTab(QWidget):
         self.currently_selected_tree_item = item
 
     def update_tree_item_selection(self):
-        items = self.tree_q.selectedItems()
+        items = self.tree_model.selectedItems()
         item_is_selected = items != []
         if item_is_selected:
             self.currently_selected_tree_item = items[0]
@@ -152,7 +152,7 @@ class EditTab(QWidget):
         save_button = QPushButton("Zapisz")
         load_button = QPushButton("Ładuj")
 
-        save_button.setDisabled(True)
+        # save_button.setDisabled(True)
         # load_button.setDisabled(True)
 
         save_button.clicked.connect(self.save_database)
@@ -188,25 +188,63 @@ class EditTab(QWidget):
         # msgBox.setTextFormat(msgbox_format)
         msgBox.exec_()
 
-    def lxml_get_subtree_nodes(self, tree_widget_item):
-        name, inside = tree_widget_item.text(0), tree_widget_item.text(1)
-        element = et.Element("Element", Name=name, Text=inside)
-        for i in range(tree_widget_item.childCount()):
-            child = tree_widget_item.child(i)
-            subelement = self.lxml_get_subtree_nodes(child)
-            element.append(subelement)
-        return element
-
     def lxml_get_all_items(self):
+        def recursave(tree_node, root):
+            for i in range(tree_node.rowCount()):
+                name_node = tree_node.item(i, 0)
+                name = name_node.text()
+                text = tree_node.item(i, 1).text()
+                element = et.SubElement(root, "Element", Name=name, Text=text)
+                help_recursave(name_node, element)
+
+        def help_recursave(tree_node, root):
+            for i in range(tree_node.rowCount()):
+                name_node = tree_node.child(i)
+                name = name_node.text()
+                text = tree_node.child(i, 1).text()
+                element = et.SubElement(root, "Element", Name=name, Text=text)
+                help_recursave(name_node, element)
+
         timestamp = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
         root = et.Element("root", timestamp=timestamp)
-        for i in range(self.tree_q.topLevelItemCount()):
-            top_item = self.tree_q.topLevelItem(i)
-            element = self.lxml_get_subtree_nodes(top_item)
-            root.append(element)
+        recursave(self.tree_model, root)
+        print(et.tostring(root))
 
         tree = et.ElementTree(root)
         return tree
+
+    # def lxml_get_all_items2(self):
+    #     def recursave(tree_node, root):
+    #         for i in range(tree_node.rowCount()):
+    #             name_node = tree_node.item(i, 0)
+    #             name = name_node.text()
+    #             text = tree_node.item(i, 1).text()
+    #             element = et.SubElement(root, "Element")
+    #             name_elem = et.SubElement(element, "Name")
+    #             name_elem.text = name
+    #             text_elem = et.SubElement(element, "Text")
+    #             text_elem.text = text
+    #             help_recursave(name_node, element)
+    #
+    #     def help_recursave(tree_node, root):
+    #         for i in range(tree_node.rowCount()):
+    #             name_node = tree_node.child(i)
+    #             name = name_node.text()
+    #             text = tree_node.child(i, 1).text()
+    #             element = et.SubElement(root, "Element")
+    #             name_elem = et.SubElement(element, "Name")
+    #             name_elem.text = name
+    #             text_elem = et.SubElement(element, "Text")
+    #             text_elem.text = text
+    #             help_recursave(name_node, element)
+    #
+    #     timestamp = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+    #     root = et.Element("root", timestamp=timestamp)
+    #     recursave(self.tree_model, root)
+    #     print(et.tostring(root))
+    #
+    #     tree = et.ElementTree(root)
+    #     return tree
 
     def load_database(self):
         filename = self.file_dialog.open()
@@ -228,11 +266,11 @@ class EditTab(QWidget):
                 return
 
         self.database._setroot(root)
-        self.update_tree2()
+        self.update_tree()
         self.signal.emit()
 
-    def update_tree2(self):
-        self.tree_q.clear()
+    def update_tree(self):
+        self.tree_model.clear()
 
         def help_rec(xlm_tree, qroot):
             for child in xlm_tree.getroot():
@@ -248,7 +286,7 @@ class EditTab(QWidget):
                 NAME.appendRow([n, t])
             return NAME, TEXT
 
-        help_rec(self.database, self.tree_q)
+        help_rec(self.database, self.tree_model)
         self.tree_view.expandAll()
 
 

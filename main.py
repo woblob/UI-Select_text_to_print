@@ -28,9 +28,9 @@ from edittab import EditTab
 class ConnectionBetweenTabs(QObject):
     database = et.ElementTree()
     send_signal = pyqtSignal()
-    Qtree = QStandardItemModel()
-    Qtree.setObjectName(u"treeModel")
-    Qtree.setColumnCount(2)
+    tree_model = QStandardItemModel()
+    tree_model.setObjectName(u"treeModel")
+    tree_model.setColumnCount(2)
 
     # @staticmethod
     # def make_tree():
