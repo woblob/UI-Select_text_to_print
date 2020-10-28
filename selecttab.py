@@ -9,7 +9,7 @@ class SelectTab(QWidget):
         super().__init__()
 
         self.database = link.database
-        self.tree_q = link.Qtree
+        self.tree_model = link.tree_model
         self.signal = link.send_signal
         self.tree_view = None
         self.signal.connect(self.update_tree)
@@ -74,17 +74,17 @@ class SelectTab(QWidget):
         print(file_list)
 
     def iter_tree(self, flags=QTreeWidgetItemIterator.Checked):
-        iterator = QTreeWidgetItemIterator(self.tree_q, flags=flags)
+        iterator = QTreeWidgetItemIterator(self.tree_model, flags=flags)
         while iterator.value():
             item = iterator.value()
             yield item
             iterator += 1
 
     def make_select_tree_widget(self):
-        # self.tree_q.itemClicked.connect(self.on_item_clicked)
+        # self.tree_model.itemClicked.connect(self.on_item_clicked)
 
         tree_view = QTreeView()
-        tree_view.setModel(self.tree_q)
+        tree_view.setModel(self.tree_model)
         tree_view.header().setSectionResizeMode(QHeaderView.ResizeToContents)
         tree_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tree_view = tree_view
