@@ -26,54 +26,30 @@ from edittab import EditTab
 
 
 class ConnectionBetweenTabs(QObject):
-    Qtree = None
     database = et.ElementTree()
     send_signal = pyqtSignal()
+    Qtree = QStandardItemModel()
+    Qtree.setObjectName(u"treeModel")
+    Qtree.setColumnCount(2)
 
-    def __init__(self):
-        super().__init__()
-        ConnectionBetweenTabs.func()
-
-    @classmethod
-    def func(cls):
-        cls.Qtree = cls.make_tree()
-
-    @staticmethod
-    def make_tree():
-        treeWidget = QTreeWidget()
-
-        treeWidget.setObjectName(u"treeWidget")
-        treeWidget.setGeometry(QRect(0, 0, 500, 500))
-        treeWidget.setUniformRowHeights(True)
-
-        elements_column = QTreeWidgetItem()
-        elements_column.setTextAlignment(0, Qt.AlignCenter)
-        elements_column.setText(0, "Pliki")
-        elements_column.setText(1, "Treść")
-
-        treeWidget.setHeaderItem(elements_column)
-
-        header = treeWidget.header()
-        header.setSectionResizeMode(QHeaderView.ResizeToContents)
-        # header.hideSection(1)
-        # header.showSection(1)
-
-        column = 0
-
-        for i in range(2):
-            treeitem_1 = QTreeWidgetItem(treeWidget)
-            treeitem_1.setText(column, f"Rodzaj{i}")
-            treeitem_1.setCheckState(Qt.Unchecked, column)
-            for j in range(2):
-                treeitem_2 = QTreeWidgetItem(treeitem_1)
-                treeitem_2.setText(column, f"Rodzaj{i}_{j}")
-                treeitem_2.setCheckState(Qt.Unchecked, column)
-                for k in range(2):
-                    treeitem_3 = QTreeWidgetItem(treeitem_2)
-                    treeitem_3.setText(column, f"Rodzaj{i}_{j}_{k}")
-                    treeitem_3.setCheckState(Qt.Unchecked, column)
-
-        return treeWidget
+    # @staticmethod
+    # def make_tree():
+    #     pass
+    #     # treeWidget.setUniformRowHeights(True)
+    #
+    #     # treeModel.setHorizontalHeaderLabels(["Name", "Text"])
+    #
+    #     # elements_column = QTreeWidgetItem()
+    #     # elements_column.setTextAlignment(0, Qt.AlignCenter)
+    #     # elements_column.setText(0, "Pliki")
+    #     # elements_column.setText(1, "Treść")
+    #
+    #     # treeWidget.setHeaderItem(elements_column)
+    #
+    #     # header = treeWidget.header()
+    #     # header.setSectionResizeMode(QHeaderView.ResizeToContents)
+    #     # header.hideSection(1)
+    #     # header.showSection(1)
 
 
 class Window(QWidget):
@@ -107,7 +83,8 @@ class Window(QWidget):
         self.setLayout(main_h_box)
 
     def on_change_tab(self):
-        print(self.tab_bar.currentIndex())
+        # print(self.tab_bar.currentIndex())
+        pass
 
 if __name__ == "__main__":
     app = QApplication([])

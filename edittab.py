@@ -6,6 +6,22 @@ from lxml import etree as et
 import datetime
 
 
+class NameItem(QStandardItem):
+    def __init__(self, txt):
+        super().__init__()
+        self.setEditable(True)
+        self.setText(txt)
+        self.setCheckState(Qt.Unchecked)
+        self.setCheckable(True)
+
+
+class TextItem(QStandardItem):
+    def __init__(self, txt=''):
+        super().__init__()
+        self.setEditable(True)
+        self.setText(txt)
+
+
 class EditTab(QWidget):
     def __init__(self, link):
         super().__init__()
@@ -46,10 +62,10 @@ class EditTab(QWidget):
         # edit_button.setDisabled(True)
         remove_button.setDisabled(True)
 
-        add_item_button.clicked.connect(self.add_tree_item)
-        add_subitem_button.clicked.connect(self.add_subitem_tree_item)
+        # add_item_button.clicked.connect(self.add_tree_item)
+        # add_subitem_button.clicked.connect(self.add_subitem_tree_item)
         # edit_button.clicked.connect(self.edit_tree_item)
-        remove_button.clicked.connect(self.remove_tree_item)
+        # remove_button.clicked.connect(self.remove_tree_item)
 
         self.add_subitem_button = add_subitem_button
         # self.edit_button = edit_button
@@ -65,31 +81,17 @@ class EditTab(QWidget):
         return groupbox
 
     def make_edit_tree(self):
-
-
         tree_view = QTreeView()
-        model =  QStandardItemModel()
+        tree_view.setModel(self.tree_q)
 
-        root = model.invisibleRootItem()
-
-        self.populate_root()
-
-        tree_view.setModel(model)
-
-
-        print(tree_view.geometry())
-        # tree_view.
-        # tree_view.hideColumn()
+        self.tree_view = tree_view
+        tree_view.header().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         # self.tree_q.itemClicked.connect(self.select_item)
         # self.tree_q.itemDoubleClicked.connect(self.edit_tree_item)
         # self.tree_q.itemSelectionChanged.connect(self.update_tree_item_selection)
 
-        # return self.tree_q
         return tree_view
-
-    def populate_root(self):
-        pass
 
     def add_tree_item(self):
         if self.currently_selected_tree_item is None:
@@ -150,7 +152,7 @@ class EditTab(QWidget):
         save_button = QPushButton("Zapisz")
         load_button = QPushButton("Ładuj")
 
-        # save_button.setDisabled(True)
+        save_button.setDisabled(True)
         # load_button.setDisabled(True)
 
         save_button.clicked.connect(self.save_database)
@@ -226,25 +228,28 @@ class EditTab(QWidget):
                 return
 
         self.database._setroot(root)
-        self.update_tree()
+        self.update_tree2()
         self.signal.emit()
 
-    def update_tree(self):
+    def update_tree2(self):
         self.tree_q.clear()
 
         def help_rec(xlm_tree, qroot):
             for child in xlm_tree.getroot():
-                rec(child, qroot)
+                n, t = rec(child)
+                qroot.appendRow([n, t])
 
-        def rec(elem, root):
-            item = QTreeWidgetItem(root)
-            item.setText(0, elem.get("Name"))
-            item.setText(1, elem.get("Text"))
+        def rec(elem):
+            name = elem.get("Name")
+            text = elem.get("Text")
+            NAME, TEXT = NameItem(name), TextItem(text)
             for child in elem:
-                rec(child, item)
+                n, t = rec(child)
+                NAME.appendRow([n, t])
+            return NAME, TEXT
 
         help_rec(self.database, self.tree_q)
-        self.tree_q.expandAll()
+        self.tree_view.expandAll()
 
 
 class CustomFileDialog(QFileDialog):

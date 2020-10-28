@@ -8,11 +8,12 @@ class SelectTab(QWidget):
     def __init__(self, link):
         super().__init__()
 
-        self.tree = None
         self.database = link.database
         self.tree_q = link.Qtree
         self.signal = link.send_signal
-        # self.signal.connect(self.update_tree)
+        self.tree_view = None
+        self.signal.connect(self.update_tree)
+
         self.do_nothing = lambda: None
 
         self.initializeTab()
@@ -79,48 +80,19 @@ class SelectTab(QWidget):
             yield item
             iterator += 1
 
-
     def make_select_tree_widget(self):
-        # treeWidget = QTreeWidget()
-        #
-        # treeWidget.setObjectName(u"treeWidget")
-        # treeWidget.setGeometry(QRect(0, 0, 500, 500))
-        # treeWidget.setUniformRowHeights(True)
-        #
-        # Elements_column = QTreeWidgetItem()
-        # Elements_column.setTextAlignment(0, Qt.AlignCenter)
-        # Elements_column.setText(0, "Elements")
-        # Elements_column.setText(1, "Treść")
-        #
-        # treeWidget.setHeaderItem(Elements_column)
-
-        # header = self.tree_q.header()
-        # # header.setSectionResizeMode(QHeaderView.ResizeToContents)
-        # header.hideSection(1)
-
-        # column = 0
-        #
-        # for i in range(2):
-        #     treeitem_1 = QTreeWidgetItem(treeWidget)
-        #     treeitem_1.setText(column, f"Rodzaj{i}")
-        #     treeitem_1.setCheckState(Qt.Unchecked, column)
-        #     for j in range(2):
-        #         treeitem_2 = QTreeWidgetItem(treeitem_1)
-        #         treeitem_2.setText(column, f"Rodzaj{i}_{j}")
-        #         treeitem_2.setCheckState(Qt.Unchecked, column)
-        #         for k in range(2):
-        #             treeitem_3 = QTreeWidgetItem(treeitem_2)
-        #             treeitem_3.setText(column, f"Rodzaj{i}_{j}_{k}")
-        #             treeitem_3.setCheckState(Qt.Unchecked, column)
-        #
-        # self.tree = treeWidget
         # self.tree_q.itemClicked.connect(self.on_item_clicked)
 
-        # treeWidget.expandAll()
-        tree_view = QTreeView(self.tree_q)
+        tree_view = QTreeView()
+        tree_view.setModel(self.tree_q)
+        tree_view.header().setSectionResizeMode(QHeaderView.ResizeToContents)
+        tree_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tree_view = tree_view
         return tree_view
 
-        # return self.tree_q
+    def update_tree(self):
+        self.tree_view.hideColumn(1)
+        self.tree_view.expandAll()
 
     @pyqtSlot(QTreeWidgetItem, int)
     def on_item_clicked(self, it, col):
@@ -207,26 +179,3 @@ class SelectTab(QWidget):
                 selected.append(checkbox.text())
 
         print(" - ".join(selected))
-
-    # def update_tree(self):
-    #     self.tree_q.clear()
-    #
-    #     def help_rec(xlm_tree, qroot):
-    #         for child in xlm_tree.getroot():
-    #             rec(child, qroot)
-    #
-    #     def rec(elem, root):
-    #         item = QTreeWidgetItem(root)
-    #
-    #         name_column = (0, elem.get("Name"))
-    #         item.setText(*name_column)
-    #         item.setCheckState(Qt.Unchecked, 0)
-    #
-    #         text_column = (1, elem.get("Text"))
-    #         item.setText(*text_column)
-    #
-    #         for child in elem:
-    #             rec(child, item)
-    #
-    #     help_rec(self.database, self.tree)
-    #     self.tree.expandAll()
