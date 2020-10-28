@@ -14,8 +14,9 @@ from edittab import EditTab
 # zaladowanie pliku do select: zrobione
 # wyswietlenie drzewa edit: zrobione
 # wyswietlenie drzewa select, sygnal: zrobione
-# TODO: zmienic database etree -> Qtree (połączone z następnym) treeview
-# TODO: update zmian drzewa edit -> select
+# zmienic database etree -> Qtree (połączone z następnym) treeview: zrobione
+# update zmian drzewa edit -> select: zrobione
+# TODO: zmiana aplikacji na bardziej elastyczną
 # TODO: drukowanie
 # TODO: które texty zaznaczyć aka profil domyślny
 # TODO: jak drukowac, checkbox'y
@@ -31,25 +32,9 @@ class ConnectionBetweenTabs(QObject):
     tree_model = QStandardItemModel()
     tree_model.setObjectName(u"treeModel")
     tree_model.setColumnCount(2)
-
-    # @staticmethod
-    # def make_tree():
-    #     pass
-    #     # treeWidget.setUniformRowHeights(True)
-    #
-    #     # treeModel.setHorizontalHeaderLabels(["Name", "Text"])
-    #
-    #     # elements_column = QTreeWidgetItem()
-    #     # elements_column.setTextAlignment(0, Qt.AlignCenter)
-    #     # elements_column.setText(0, "Pliki")
-    #     # elements_column.setText(1, "Treść")
-    #
-    #     # treeWidget.setHeaderItem(elements_column)
-    #
-    #     # header = treeWidget.header()
-    #     # header.setSectionResizeMode(QHeaderView.ResizeToContents)
-    #     # header.hideSection(1)
-    #     # header.showSection(1)
+    tree_model.setHorizontalHeaderItem(0, QStandardItem("Name"))
+    tree_model.setHorizontalHeaderItem(1, QStandardItem("Text"))
+    # tree_model.itemChanged.connect(lambda: ConnectionBetweenTabs.f())
 
 
 class Window(QWidget):

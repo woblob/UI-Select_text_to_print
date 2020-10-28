@@ -2,7 +2,6 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import sys
-# import lxml.etree as et
 
 class SelectTab(QWidget):
     def __init__(self, link):
@@ -37,7 +36,7 @@ class SelectTab(QWidget):
         checkboxes = self.initialize_check_boxes()
         export_button = QPushButton("Eksportuj jako docx")
         export_button.clicked.connect(self.export_tree_as_docx)
-        # export_button.setDisabled(True)
+        export_button.setDisabled(True)
 
         hbox.addWidget(checkboxes)
         hbox.addWidget(export_button)
@@ -81,42 +80,43 @@ class SelectTab(QWidget):
             iterator += 1
 
     def make_select_tree_widget(self):
-        # self.tree_model.itemClicked.connect(self.on_item_clicked)
-
         tree_view = QTreeView()
         tree_view.setModel(self.tree_model)
         tree_view.header().setSectionResizeMode(QHeaderView.ResizeToContents)
         tree_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        tree_view.hideColumn(1)
+        tree_view.clicked.connect(self.on_item_clicked)
         self.tree_view = tree_view
         return tree_view
 
     def update_tree(self):
         self.tree_view.hideColumn(1)
         self.tree_view.expandAll()
+        #TODO: names reset after load
 
-    @pyqtSlot(QTreeWidgetItem, int)
-    def on_item_clicked(self, it, col):
-        if it.checkState(col) == Qt.Checked:
-            self.check_all_descendants(it)
-            self.update_all_ancestors_Checked(it)
-        elif it.checkState(col) == Qt.Unchecked:
-            self.uncheck_all_descendants(it)
-            self.update_all_ancestors_Unhecked(it)
+    def on_item_clicked(self, index):
+        item = self.tree_model.itemFromIndex(index)
+        if item.checkState() == Qt.Checked:
+            self.check_all_descendants(item)
+            self.update_all_ancestors_Checked(item)
+        elif item.checkState() == Qt.Unchecked:
+            self.uncheck_all_descendants(item)
+            self.update_all_ancestors_Unhecked(item)
+            pass
 
     def update_all_ancestors_Checked(self, item):
         parent = item.parent()
         if parent is None:
             return
 
-        col = 0
         tristate = 1
         for child in SelectTab.children_of_(parent):
-            if not child.checkState(col) == Qt.Checked:
-                parent.setCheckState(col, tristate)
+            if not child.checkState() == Qt.Checked:
+                parent.setCheckState(tristate)
                 self.update_all_ancestors_Checked(parent)
                 break
         else:
-            parent.setCheckState(col, Qt.Checked)
+            parent.setCheckState(Qt.Checked)
             self.update_all_ancestors_Checked(parent)
 
     def update_all_ancestors_Unhecked(self, item):
@@ -124,39 +124,32 @@ class SelectTab(QWidget):
         if parent is None:
             return
 
-        col = 0
         tristate = 1
         for child in SelectTab.children_of_(parent):
-            if not child.checkState(col) == Qt.Unchecked:
-                parent.setCheckState(col, tristate)
+            if not child.checkState() == Qt.Unchecked:
+                parent.setCheckState(tristate)
                 self.update_all_ancestors_Unhecked(parent)
                 break
         else:
-            parent.setCheckState(col, Qt.Unchecked)
+            parent.setCheckState(Qt.Unchecked)
             self.update_all_ancestors_Unhecked(parent)
 
     @staticmethod
-    def top_children_of_(tree):
-        for index in range(tree.topLevelItemCount()):
-            child = tree.topLevelItem(index)
-            yield child
-
-    @staticmethod
     def children_of_(item):
-        for index in range(item.childCount()):
-            child = item.child(index)
+        for index in range(item.rowCount()):
+            child = item.child(index, 0)
             yield child
 
     def check_all_descendants(self, item):
         for child in SelectTab.children_of_(item):
-            if not child.checkState(0) == Qt.Checked:
-                child.setCheckState(0, Qt.Checked)
+            if not child.checkState() == Qt.Checked:
+                child.setCheckState(Qt.Checked)
                 self.check_all_descendants(child)
 
     def uncheck_all_descendants(self, item):
         for child in SelectTab.children_of_(item):
-            if not child.checkState(0) == Qt.Unchecked:
-                child.setCheckState(0, Qt.Unchecked)
+            if not child.checkState() == Qt.Unchecked:
+                child.setCheckState(Qt.Unchecked)
                 self.uncheck_all_descendants(child)
 
     def initialize_select_button_box(self):
