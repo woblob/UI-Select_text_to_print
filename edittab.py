@@ -56,25 +56,20 @@ class EditTab(QWidget):
         hbox = QHBoxLayout()
         add_item_button = QPushButton("Dodaj Element")
         add_subitem_button = QPushButton("Dodaj podElement")
-        # edit_button = QPushButton("Edytuj")
         remove_button = QPushButton("Usuń")
 
-        # add_subitem_button.setDisabled(True)
-        # edit_button.setDisabled(True)
-        # remove_button.setDisabled(True)
+        add_subitem_button.setDisabled(True)
+        remove_button.setDisabled(True)
 
         add_item_button.clicked.connect(self.add_tree_item)
         add_subitem_button.clicked.connect(self.add_subitem_tree_item)
-        # edit_button.clicked.connect(self.edit_tree_item)
         remove_button.clicked.connect(self.remove_tree_item)
 
         self.add_subitem_button = add_subitem_button
-        # self.edit_button = edit_button
         self.remove_button = remove_button
 
         hbox.addWidget(add_item_button)
         hbox.addWidget(add_subitem_button)
-        # hbox.addWidget(edit_button)
         hbox.addWidget(remove_button)
 
         groupbox = QGroupBox()
@@ -84,30 +79,18 @@ class EditTab(QWidget):
     def make_edit_tree(self):
         tree_view = QTreeView()
         tree_view.setModel(self.tree_model)
-
         self.tree_view = tree_view
         tree_view.header().setSectionResizeMode(QHeaderView.ResizeToContents)
-        tree_view.clicked.connect(self.select_item)
-        # tree_view.selectionModel().selectionChanged.connect(self.func)
-        # tree_view.selectionModel().currentChanged.connect(self.func)
-        # tree_view.selectionChanged.connect(lambda: None)
-        # tree_view
-        # self.tree_model.itemSelectionChanged.connect(self.update_tree_item_selection)
+        # tree_view.clicked.connect(self.select_item)
+        tree_view.selectionModel().selectionChanged.connect(self.update_tree_item_selection)
 
         return tree_view
-
-    def func(self, current, prev):
-        # sip.delete()
-        print(current)
-
-        print(current.takeAt(0))
 
     def add_tree_item(self):
         if self.currently_selected_tree_item is None:
             parent = self.tree_model
         else:
-            parent_index = self.currently_selected_tree_item.parent()
-            parent = self.tree_model.itemFromIndex(parent_index)
+            parent = self.currently_selected_tree_item.parent()
             if parent is None:
                 parent = self.tree_model
 
@@ -120,36 +103,34 @@ class EditTab(QWidget):
         self.helper_counter += 1
 
     def add_subitem_tree_item(self):
-        parent_index = self.currently_selected_tree_item
-        parent = self.tree_model.itemFromIndex(parent_index)
+        parent = self.currently_selected_tree_item
+        parent_index = parent.index()
         self.make_dummy_tree_item(parent)
         self.tree_view.expand(parent_index)
 
     def remove_tree_item(self):
-        index = self.currently_selected_tree_item
-        self.currently_selected_tree_item = None
-        item = self.tree_model.itemFromIndex(index)
-        print(type(item))
-        self.tree_model.clearItemData(index)
-        # sip.delete(item)
-        a = 1
+        a = self.tree_view.selectionModel().currentIndex()
+        p_index = a.parent()
+        parent = self.tree_model.itemFromIndex(p_index) or self.tree_model
+        parent.removeRow(a.row())
 
-    def select_item(self, item):
-        # # self.tree_view.selectionChanged(item.model(), None) #.connect(lambda: print("uidfdf"))
-        self.currently_selected_tree_item = item
-        print(type(item))
+    # def select_item(self, item):
+    #     self.currently_selected_tree_item = item
 
-    def update_tree_item_selection(self):
-        items = self.tree_model.selectedItems()
-        item_is_selected = items != []
-        if item_is_selected:
-            self.currently_selected_tree_item = items[0]
-        else:
+    def update_tree_item_selection(self, current, prev):
+        indexes = current.indexes()
+        disabled = True
+        if indexes == []:
             self.currently_selected_tree_item = None
+        else:
+            nameindex, _ = indexes
+            nameitem = self.tree_model.itemFromIndex(nameindex)
+            print(f"update_tree_item_selection {nameitem}")  # , {textitem}")
+            self.currently_selected_tree_item = nameitem
+            disabled = False
 
-        self.add_subitem_button.setDisabled(not item_is_selected)
-        # self.edit_button.setDisabled(not item_is_selected)
-        self.remove_button.setDisabled(not item_is_selected)
+        self.add_subitem_button.setDisabled(disabled)
+        self.remove_button.setDisabled(disabled)
 
     def initialize_IO_button_box(self):
         hbox = QHBoxLayout()

@@ -16,7 +16,7 @@ from edittab import EditTab
 # wyswietlenie drzewa select, sygnal: zrobione
 # zmienic database etree -> Qtree (połączone z następnym) treeview: zrobione
 # update zmian drzewa edit -> select: zrobione
-# TODO: zmiana aplikacji na bardziej elastyczną
+# zmiana aplikacji na bardziej elastyczną: zrobione
 # TODO: drukowanie
 # TODO: które texty zaznaczyć aka profil domyślny
 # TODO: jak drukowac, checkbox'y
@@ -35,7 +35,6 @@ class ConnectionBetweenTabs(QObject):
     tree_model.setHorizontalHeaderItem(0, QStandardItem("Name"))
     tree_model.setHorizontalHeaderItem(1, QStandardItem("Text"))
     # tree_model.itemChanged.connect(lambda: ConnectionBetweenTabs.f())
-
 
 class Window(QWidget):
     def __init__(self):
