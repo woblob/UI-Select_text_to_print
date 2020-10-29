@@ -1,7 +1,6 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5 import sip
 from lxml import etree as et
 import datetime
 
@@ -252,6 +251,8 @@ class EditTab(QWidget):
         self.signal.emit()
 
     def update_tree(self):
+        column_name0 = self.tree_model.headerData(0, Qt.Horizontal)
+        column_name1 = self.tree_model.headerData(1, Qt.Horizontal)
         self.tree_model.clear()
 
         def help_rec(xlm_tree, qroot):
@@ -270,6 +271,8 @@ class EditTab(QWidget):
 
         help_rec(self.database, self.tree_model)
         self.tree_view.expandAll()
+        self.tree_model.setHorizontalHeaderItem(0, QStandardItem(column_name0))
+        self.tree_model.setHorizontalHeaderItem(1, QStandardItem(column_name1))
         self.currently_selected_tree_item = None
 
 

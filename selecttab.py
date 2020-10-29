@@ -85,6 +85,7 @@ class SelectTab(QWidget):
         tree_view.header().setSectionResizeMode(QHeaderView.ResizeToContents)
         tree_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
         tree_view.hideColumn(1)
+        tree_view.setHeaderHidden(True)
         tree_view.clicked.connect(self.on_item_clicked)
         self.tree_view = tree_view
         return tree_view
@@ -92,7 +93,7 @@ class SelectTab(QWidget):
     def update_tree(self):
         self.tree_view.hideColumn(1)
         self.tree_view.expandAll()
-        #TODO: names reset after load
+        self.tree_view.setHeaderHidden(True)
 
     def on_item_clicked(self, index):
         item = self.tree_model.itemFromIndex(index)
