@@ -8,15 +8,11 @@ from docx import Document
 class SelectTab(QWidget):
     def __init__(self, link):
         super().__init__()
-
         self.database = link.database
         self.tree_model = link.tree_model
         self.signal = link.send_signal
         self.tree_view = None
         self.signal.connect(self.update_tree)
-
-        self.do_nothing = lambda: None
-
         self.initializeTab()
 
     def initializeTab(self):
@@ -38,7 +34,6 @@ class SelectTab(QWidget):
         checkboxes = self.initialize_check_boxes()
         export_button = QPushButton("Eksportuj jako docx")
         export_button.clicked.connect(self.export_tree_as_docx)
-        # export_button.setDisabled(True)
 
         hbox.addWidget(checkboxes)
         hbox.addWidget(export_button)
@@ -49,9 +44,10 @@ class SelectTab(QWidget):
 
     def initialize_check_boxes(self):
         vbox = QVBoxLayout()
-        checkbox1 = QCheckBox("checkbox 1")
-        checkbox1.setChecked(True)
+        checkbox1 = QCheckBox("zaznacz wszyskto")
+        checkbox1.toggled.connect(self.checkAll)
         checkbox2 = QCheckBox("checkbox 2")
+        # checkbox2.setChecked(True)
 
         vbox.addWidget(checkbox1)
         vbox.addWidget(checkbox2)
@@ -64,11 +60,6 @@ class SelectTab(QWidget):
         root = self.tree_model.invisibleRootItem()
         files = SelectTab.gather_files_from_tree(root)
         Print_docx(files)
-        # self.print_docx(files)
-
-    def print_docx(self, file_list):
-        print(len(file_list))
-        print(file_list)
 
     @staticmethod
     def gather_files_from_tree(root):
@@ -107,6 +98,13 @@ class SelectTab(QWidget):
         self.tree_view.hideColumn(1)
         self.tree_view.expandAll()
         self.tree_view.setHeaderHidden(True)
+
+    def checkAll(self, checkbox_state):
+        root = self.tree_model.invisibleRootItem()
+        if checkbox_state:
+            self.check_all_descendants(root)
+        else:
+            self.uncheck_all_descendants(root)
 
     def on_item_clicked(self, index):
         item = self.tree_model.itemFromIndex(index)
@@ -175,16 +173,6 @@ class SelectTab(QWidget):
         buttonBox.rejected.connect(sys.exit)
         return buttonBox
 
-    def checkbox_summary(self):
-        selected = []
-
-        for checkbox in self.checkboxes:
-            if checkbox.isChecked():
-                selected.append(checkbox.text())
-
-        print(" - ".join(selected))
-
-
 
 class Print_docx:
     def __init__(self, list_of_files, filename = "Dokumenty do druku.docx"):
@@ -200,7 +188,7 @@ class Print_docx:
         table = self.document.add_table(rows=1, cols=3)
         hdr_cells = table.rows[0].cells
         hdr_cells[0].text = 'Nr.'
-        hdr_cells[1].text = 'text text'
+        hdr_cells[1].text = 'tresc'
         hdr_cells[2].text = 'Znak'
         return table
 

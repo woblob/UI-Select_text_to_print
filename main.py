@@ -17,13 +17,15 @@ from edittab import EditTab
 # zmienic database etree -> Qtree (połączone z następnym) treeview: zrobione
 # update zmian drzewa edit -> select: zrobione
 # zmiana aplikacji na bardziej elastyczną: zrobione
-# TODO: drukowanie
+# drukowanie: zrobione
+# jak drukowac, checkbox'y/ checkAll: zrobione
 # TODO: które texty zaznaczyć aka profil domyślny
-# TODO: jak drukowac, checkbox'y
+# TODO: jak drukowac, checkbox'y/ printAll
 # TODO: Autoload database
 # TODO: wyciagnac drzewo edit i zrobic nowa klase
 # TODO: zapis zmian przed wyjściem
-# TODO: zmienic zapis do XML'a
+# TODO: ?zmienic zapis do XML'a
+# TODO: ?ładne drukowanie
 
 
 class ConnectionBetweenTabs(QObject):
@@ -34,7 +36,7 @@ class ConnectionBetweenTabs(QObject):
     tree_model.setColumnCount(2)
     tree_model.setHorizontalHeaderItem(0, QStandardItem("Name"))
     tree_model.setHorizontalHeaderItem(1, QStandardItem("Text"))
-    # tree_model.itemChanged.connect(lambda: ConnectionBetweenTabs.f())
+
 
 class Window(QWidget):
     def __init__(self):
@@ -59,16 +61,10 @@ class Window(QWidget):
         self.tab_bar.addTab(self.select_tab, "Wybór tekstów")
         self.tab_bar.addTab(self.edit_tab, "Edycja tekstów")
 
-        self.tab_bar.currentChanged.connect(self.on_change_tab)
-
         main_h_box = QHBoxLayout()
         main_h_box.addWidget(self.tab_bar)
-        # main_h_box.setAlignment(Qt.AlignCenter)
         self.setLayout(main_h_box)
 
-    def on_change_tab(self):
-        # print(self.tab_bar.currentIndex())
-        pass
 
 if __name__ == "__main__":
     app = QApplication([])
