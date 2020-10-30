@@ -78,11 +78,12 @@ class EditTab(QWidget):
     def make_edit_tree(self):
         tree_view = QTreeView()
         tree_view.setModel(self.tree_model)
-        self.tree_view = tree_view
+        tree_view.setAlternatingRowColors(True)
         tree_view.header().setSectionResizeMode(QHeaderView.ResizeToContents)
         # tree_view.clicked.connect(self.select_item)
         tree_view.selectionModel().selectionChanged.connect(self.update_tree_item_selection)
 
+        self.tree_view = tree_view
         return tree_view
 
     def add_tree_item(self):

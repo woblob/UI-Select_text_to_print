@@ -36,7 +36,7 @@ class SelectTab(QWidget):
         checkboxes = self.initialize_check_boxes()
         export_button = QPushButton("Eksportuj jako docx")
         export_button.clicked.connect(self.export_tree_as_docx)
-        export_button.setDisabled(True)
+        # export_button.setDisabled(True)
 
         hbox.addWidget(checkboxes)
         hbox.addWidget(export_button)
@@ -59,25 +59,35 @@ class SelectTab(QWidget):
         return groupbox
 
     def export_tree_as_docx(self):
-        files = self.gather_files_from_tree()
+        root = self.tree_model.invisibleRootItem()
+        files = SelectTab.gather_files_from_tree(root)
         self.print_docx(files)
 
-    def gather_files_from_tree(self):
-        lst = []
-        for item in self.iter_tree():
-            if item.childCount() == 0:
-               lst.append(item.text(1))
-        return lst
-
     def print_docx(self, file_list):
+        print(len(file_list))
         print(file_list)
 
-    def iter_tree(self, flags=QTreeWidgetItemIterator.Checked):
-        iterator = QTreeWidgetItemIterator(self.tree_model, flags=flags)
-        while iterator.value():
-            item = iterator.value()
-            yield item
-            iterator += 1
+    @staticmethod
+    def gather_files_from_tree(root):
+        def children_of_(item):
+            for index in range(item.rowCount()):
+                name_col = item.child(index, 0)
+                text_col = item.child(index, 1)
+                yield name_col, text_col
+
+        tristate = 1
+        lst = []
+        for name_item, text_item in children_of_(root):
+            state = name_item.checkState()
+            isChecked = state == Qt.Checked or \
+                        state == tristate
+            if isChecked:
+                if name_item.hasChildren():
+                    items = SelectTab.gather_files_from_tree(name_item)
+                    lst.extend(items)
+                else:
+                    lst.append(text_item.text())
+        return lst
 
     def make_select_tree_widget(self):
         tree_view = QTreeView()

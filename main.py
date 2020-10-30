@@ -34,8 +34,6 @@ class ConnectionBetweenTabs(QObject):
     tree_model.setColumnCount(2)
     tree_model.setHorizontalHeaderItem(0, QStandardItem("Name"))
     tree_model.setHorizontalHeaderItem(1, QStandardItem("Text"))
-    # tree_model.headerData(0, Qt.)
-
     # tree_model.itemChanged.connect(lambda: ConnectionBetweenTabs.f())
 
 class Window(QWidget):
