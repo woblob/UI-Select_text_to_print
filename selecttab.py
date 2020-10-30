@@ -2,6 +2,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import sys
+from docx import Document
+
 
 class SelectTab(QWidget):
     def __init__(self, link):
@@ -61,7 +63,8 @@ class SelectTab(QWidget):
     def export_tree_as_docx(self):
         root = self.tree_model.invisibleRootItem()
         files = SelectTab.gather_files_from_tree(root)
-        self.print_docx(files)
+        Print_docx(files)
+        # self.print_docx(files)
 
     def print_docx(self, file_list):
         print(len(file_list))
@@ -113,7 +116,6 @@ class SelectTab(QWidget):
         elif item.checkState() == Qt.Unchecked:
             self.uncheck_all_descendants(item)
             self.update_all_ancestors_Unhecked(item)
-            pass
 
     def update_all_ancestors_Checked(self, item):
         parent = item.parent()
@@ -169,9 +171,7 @@ class SelectTab(QWidget):
         buttonBox.setOrientation(Qt.Horizontal)
         buttonBox.setStandardButtons(
             QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-        # buttonBox.accepted.connect(self.update_tree)
-        # buttonBox.accepted.connect(self.gather_files_from_tree)
-
+        # buttonBox.accepted.connect(lambda: None)
         buttonBox.rejected.connect(sys.exit)
         return buttonBox
 
@@ -183,3 +183,40 @@ class SelectTab(QWidget):
                 selected.append(checkbox.text())
 
         print(" - ".join(selected))
+
+
+
+class Print_docx:
+    def __init__(self, list_of_files, filename = "Dokumenty do druku.docx"):
+        self.list_of_files = list_of_files
+        self.document = Document()
+        self.document.add_heading('Dokumenty do przyniesienia', 0)
+        self.table = self.make_table()
+        self.populate_table()
+        self.adjust_column_widths()
+        self.document.save(filename)
+
+    def make_table(self):
+        table = self.document.add_table(rows=1, cols=3)
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Nr.'
+        hdr_cells[1].text = 'text text'
+        hdr_cells[2].text = 'Znak'
+        return table
+
+    def populate_table(self):
+        for index, text in enumerate(self.list_of_files, 1):
+            row_cells = self.table.add_row().cells
+            row_cells[0].text = str(index)
+            row_cells[1].text = text
+            row_cells[2].text = " "
+
+    def adjust_column_widths(self):
+        w_nr = 1 / 5
+        w_z = 1 / 3.6
+        w = self.table.columns[0].width
+        self.table.columns[0].width = int(w * w_nr)
+        w = self.table.columns[1].width
+        self.table.columns[1].width = int(w * 2.5)
+        w = self.table.columns[2].width
+        self.table.columns[2].width = int(w * w_z)
