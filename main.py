@@ -29,6 +29,7 @@ from edittab import EditTab
 
 
 class ConnectionBetweenTabs(QObject):
+    unsaved_changes = 0
     database = et.ElementTree()
     send_signal = pyqtSignal()
     tree_model = QStandardItemModel()
@@ -37,6 +38,19 @@ class ConnectionBetweenTabs(QObject):
     tree_model.setHorizontalHeaderItem(0, QStandardItem("Name"))
     tree_model.setHorizontalHeaderItem(1, QStandardItem("Text"))
 
+
+class MaybeSave(QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setText("Dokonano zmian w bazie danych")
+        self.setInformativeText("Czy chcesz zapisać zmiany?")
+        self.setStandardButtons(QMessageBox.Save |
+                                QMessageBox.Discard |
+                                QMessageBox.Cancel)
+        self.setDefaultButton(QMessageBox.Save)
+
+    def run(self):
+        return self.exec()
 
 class Window(QWidget):
     def __init__(self):
@@ -64,6 +78,17 @@ class Window(QWidget):
         main_h_box = QHBoxLayout()
         main_h_box.addWidget(self.tab_bar)
         self.setLayout(main_h_box)
+
+    def closeEvent(self, event):
+        self.link.unsaved_changes = 0
+        if self.unsaved_changes:
+            choice = MaybeSave().run()
+            if choice == QMessageBox.Save:
+                self.edit_tab.save_database()
+            elif choice == QMessageBox.Cancel:
+                event.ignore()
+                return
+        event.accept()
 
 
 if __name__ == "__main__":

@@ -29,11 +29,11 @@ class EditTab(QWidget):
         self.helper_counter = 0
         self.currently_selected_tree_item = None
         self.add_subitem_button = None
-        self.edit_button = None
         self.remove_button = None
         self.database = link.database
         self.signal = link.send_signal
         self.tree_model = link.tree_model
+        self.unsaved_changes = link.unsaved_changes
         self.file_dialog = CustomFileDialog()
 
         self.initialize_tab()
@@ -109,10 +109,10 @@ class EditTab(QWidget):
         self.tree_view.expand(parent_index)
 
     def remove_tree_item(self):
-        a = self.tree_view.selectionModel().currentIndex()
-        p_index = a.parent()
+        item_index = self.tree_view.selectionModel().currentIndex()
+        p_index = item_index.parent()
         parent = self.tree_model.itemFromIndex(p_index) or self.tree_model
-        parent.removeRow(a.row())
+        parent.removeRow(item_index.row())
 
     # def select_item(self, item):
     #     self.currently_selected_tree_item = item
@@ -125,7 +125,6 @@ class EditTab(QWidget):
         else:
             nameindex, _ = indexes
             nameitem = self.tree_model.itemFromIndex(nameindex)
-            print(f"update_tree_item_selection {nameitem}")  # , {textitem}")
             self.currently_selected_tree_item = nameitem
             disabled = False
 

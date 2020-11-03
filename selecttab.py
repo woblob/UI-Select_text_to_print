@@ -19,12 +19,12 @@ class SelectTab(QWidget):
         select_tab = QVBoxLayout()
 
         print_groupbox = self.initialize_print_box()
-        tree_groupbox = self.make_select_tree_widget()
-        buttons_groupbox = self.initialize_select_button_box()
+        tree_groupbox = self.make_select_tree_view()
+        # buttons_groupbox = self.initialize_select_button_box()
 
         select_tab.addWidget(print_groupbox)
         select_tab.addWidget(tree_groupbox)
-        select_tab.addWidget(buttons_groupbox)
+        # select_tab.addWidget(buttons_groupbox)
 
         self.setLayout(select_tab)
 
@@ -69,21 +69,19 @@ class SelectTab(QWidget):
                 text_col = item.child(index, 1)
                 yield name_col, text_col
 
-        tristate = 1
         lst = []
         for name_item, text_item in children_of_(root):
-            state = name_item.checkState()
-            isChecked = state == Qt.Checked or \
-                        state == tristate
-            if isChecked:
+            is_partially_checked = name_item.checkState() != Qt.Unchecked
+            if is_partially_checked:
                 if name_item.hasChildren():
-                    items = SelectTab.gather_files_from_tree(name_item)
-                    lst.extend(items)
+                    files_to_print = SelectTab.gather_files_from_tree(name_item)
+                    lst.extend(files_to_print)
                 else:
-                    lst.append(text_item.text())
+                    file_to_print = text_item.text()
+                    lst.append(file_to_print)
         return lst
 
-    def make_select_tree_widget(self):
+    def make_select_tree_view(self):
         tree_view = QTreeView()
         tree_view.setModel(self.tree_model)
         tree_view.header().setSectionResizeMode(QHeaderView.ResizeToContents)
@@ -163,15 +161,15 @@ class SelectTab(QWidget):
                 child.setCheckState(Qt.Unchecked)
                 self.uncheck_all_descendants(child)
 
-    def initialize_select_button_box(self):
-        buttonBox = QDialogButtonBox()
-        buttonBox.setObjectName(u"buttonBox")
-        buttonBox.setOrientation(Qt.Horizontal)
-        buttonBox.setStandardButtons(
-            QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-        # buttonBox.accepted.connect(lambda: None)
-        buttonBox.rejected.connect(sys.exit)
-        return buttonBox
+    # def initialize_select_button_box(self):
+    #     buttonBox = QDialogButtonBox()
+    #     buttonBox.setObjectName(u"buttonBox")
+    #     buttonBox.setOrientation(Qt.Horizontal)
+    #     buttonBox.setStandardButtons(
+    #         QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+    #     # buttonBox.accepted.connect(lambda: None)
+    #     buttonBox.rejected.connect(sys.exit)
+    #     return buttonBox
 
 
 class Print_docx:
